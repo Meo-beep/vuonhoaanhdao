@@ -1,0 +1,1314 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vườn Anh Đào — Happy 20/10 🌸</title>
+
+    <!-- Nhập Font chữ chuẩn tiếng Việt từ Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            background: #241c3c;
+            color: white;
+        }
+
+        button, input {
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        #sky, #fireworks, #treeCanvas, #flowers, #bubbles {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.1s ease-out;
+        }
+
+        #sky {
+            z-index: 0
+        }
+
+        #fireworks {
+            z-index: 1;
+            pointer-events: none
+        }
+
+        #treeCanvas {
+            z-index: 2;
+            pointer-events: none
+        }
+
+        #flowers {
+            z-index: 3;
+            pointer-events: none
+        }
+
+        #bubbles {
+            z-index: 5;
+            pointer-events: none
+        }
+
+        #hint {
+            position: fixed;
+            z-index: 4;
+            top: 15px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: #ffe1f1;
+            pointer-events: none;
+            transition: opacity 1s;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* KHU VỰC CÔNG CỤ GÓC TRÊN BÊN PHẢI */
+        .top-controls {
+            position: fixed;
+            z-index: 100;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            font-size: 18px;
+            backdrop-filter: blur(5px);
+            transition: transform 0.2s, background 0.2s, opacity 0.5s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            padding: 0;
+            margin: 0;
+            color: white;
+        }
+
+            .icon-btn:hover {
+                transform: scale(1.1);
+                background: rgba(255, 255, 255, 0.25);
+            }
+
+        /* ICON MÈO BÍ MẬT (EASTER EGG) GÓC DƯỚI BÊN TRÁI */
+        #secretCat {
+            position: fixed;
+            z-index: 100;
+            bottom: 15px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            font-size: 20px;
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s, background 0.3s, opacity 0.5s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            animation: floatCat 3s ease-in-out infinite;
+        }
+
+            #secretCat:hover {
+                transform: scale(1.2) rotate(10deg);
+                background: rgba(255, 255, 255, 0.25);
+            }
+
+        @keyframes floatCat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* MODAL BỨC THƯ/QUÀ BÍ MẬT VÀ BỐC QUẺ */
+        .custom-modal {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(15, 10, 25, 0.75);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s, visibility 0.4s;
+        }
+
+            .custom-modal.show {
+                opacity: 1;
+                visibility: visible;
+            }
+
+        .modal-content {
+            background: linear-gradient(145deg, #fff9fc, #f4dceb);
+            color: #6c416d;
+            width: min(380px, 90%);
+            padding: 25px 20px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            transform: scale(0.8);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: 'Cormorant Garamond', Georgia, serif;
+        }
+
+        .custom-modal.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-content h3 {
+            margin: 0 0 10px;
+            color: #b04f91;
+            font-size: 24px;
+        }
+
+        .modal-content p {
+            font-size: 18px;
+            color: #653d69;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            background: linear-gradient(120deg,#df75ad,#9f559e);
+            border: none;
+            color: white;
+            padding: 8px 22px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
+        }
+
+        /* CHẾ ĐỘ ẨN GIAO DIỆN ĐỂ CHỤP ẢNH */
+        body.clean-mode #secretCat,
+        body.clean-mode #fortuneBtn,
+        body.clean-mode #hint,
+        body.clean-mode .content button,
+        body.clean-mode .page,
+        body.clean-mode .small-note,
+        body.clean-mode .name-input {
+            opacity: 0 !important;
+            pointer-events: none !important;
+            transition: opacity 0.5s;
+        }
+
+        body.clean-mode #musicToggle {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        body.clean-mode #snapshotBtn {
+            background: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 15px rgba(255,255,255,0.6);
+        }
+
+        /* NÚT BỐC QUẺ MAY MẮN GÓC DƯỚI BÊN PHẢI */
+        #fortuneBtn {
+            position: fixed;
+            z-index: 100;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(223, 117, 173, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 20px;
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #fff;
+            backdrop-filter: blur(5px);
+            transition: transform 0.2s, background 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+            #fortuneBtn:hover {
+                transform: scale(1.05);
+                background: rgba(223, 117, 173, 0.45);
+            }
+
+        /* PHONG BÌ MỞ ĐẦU */
+        #intro {
+            position: fixed;
+            z-index: 10;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            background: radial-gradient(ellipse at center,#795078,#24182f 78%);
+            transition: opacity 1.2s, visibility 1.2s;
+        }
+
+            #intro.hide {
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none
+            }
+
+        .intro-inner {
+            width: min(420px, 100%)
+        }
+
+        #intro h2 {
+            font-size: clamp(25px, 6vw, 38px);
+            color: #ffd8eb;
+            margin: 8px 0 12px;
+            font-weight: 700;
+        }
+
+        #intro p {
+            color: #f8d9ed;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        .envelope-wrap {
+            position: relative;
+            width: min(320px, 82vw);
+            height: 235px;
+            margin: 35px auto 18px;
+            perspective: 1000px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .envelope {
+            position: absolute;
+            inset: 40px 0 0;
+            border-radius: 5px 5px 13px 13px;
+            background: linear-gradient(145deg,#f4b8d6,#d88cba);
+            box-shadow: 0 22px 55px #08051e88;
+        }
+
+        .envelope-bottom {
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            background: linear-gradient(45deg,#c97eac,#f0b3d3);
+            clip-path: polygon(0 100%, 0 0, 50% 57%, 100% 0, 100% 100%);
+            border-radius: 5px 5px 13px 13px;
+        }
+
+        .envelope-flap {
+            position: absolute;
+            inset: 0 0 auto;
+            height: 145px;
+            background: linear-gradient(180deg,#ffe0ef,#e8a5ca);
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            transform-origin: top center;
+            transition: transform 1s ease;
+            z-index: 6;
+        }
+
+        .letter {
+            position: absolute;
+            z-index: 2;
+            left: 7%;
+            width: 86%;
+            height: 190px;
+            bottom: 4px;
+            border-radius: 8px;
+            background: linear-gradient(145deg,#fff9fc,#f8e4f1);
+            color: #6c416d;
+            text-align: center;
+            padding: 18px 10px;
+            transform: translateY(0);
+            transition: transform 1.2s cubic-bezier(.2,.75,.2,1);
+            box-shadow: 0 0 18px #27102c22;
+        }
+
+            .letter .mini {
+                font-size: 26px
+            }
+
+            .letter strong {
+                display: block;
+                font-size: 26px;
+                margin: 6px 0;
+                color: #b04f91;
+                font-weight: 700;
+            }
+
+            .letter small {
+                font-size: 13px;
+                color: #946b95;
+                font-family: 'Montserrat', sans-serif;
+            }
+
+        .seal {
+            position: absolute;
+            z-index: 7;
+            top: 72px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 24px;
+            background: radial-gradient(circle at 35% 30%,#fff0f6,#d66ca9 75%);
+            box-shadow: 0 3px 12px #88416f77;
+            transition: opacity .4s, transform .4s;
+        }
+
+        .envelope-wrap.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 1
+        }
+
+        .envelope-wrap.open .seal {
+            opacity: 0;
+            transform: translateX(-50%) scale(.2)
+        }
+
+        .envelope-wrap.open .letter {
+            transform: translateY(-115px);
+            transition-delay: .2s
+        }
+
+        button.action-btn {
+            border: 1px solid #ffffff88;
+            border-radius: 30px;
+            padding: 12px 22px;
+            color: #fff;
+            background: linear-gradient(120deg,#df75ad,#9f559e);
+            box-shadow: 0 5px 25px #ed8bc955;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 6px;
+            transition: transform .25s, filter .25s;
+        }
+
+            button.action-btn:hover {
+                filter: brightness(1.12);
+                transform: translateY(-2px)
+            }
+
+            button.action-btn:active {
+                transform: scale(.97)
+            }
+
+        #openBtn {
+            font-weight: bold;
+            padding: 13px 25px
+        }
+
+        .hint-small {
+            font-size: 11px !important;
+            letter-spacing: 2px;
+            margin-top: 12px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* KHU VƯỜN */
+        #garden {
+            position: relative;
+            z-index: 3;
+            min-height: 100svh;
+            height: 100svh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 25px 16px 6vh;
+            text-align: center;
+            background: linear-gradient(180deg,#271b3b20 35%,#21152bd9 100%);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1.8s, visibility 1.8s;
+        }
+
+            #garden.show {
+                opacity: 1;
+                visibility: visible
+            }
+
+        .content {
+            position: relative;
+            z-index: 3;
+            width: min(600px, 100%);
+            padding: 10px 14px 0;
+        }
+
+        .slide {
+            display: none;
+            animation: slideIn 1s ease both;
+        }
+
+            .slide.active {
+                display: block
+            }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(18px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        h1 {
+            font-size: clamp(34px, 7vw, 57px);
+            margin: 0 0 13px;
+            color: #ffe4f1;
+            font-weight: 700;
+            filter: drop-shadow(0 0 12px #ff91ca);
+        }
+
+        h2 {
+            font-size: clamp(25px, 5.5vw, 38px);
+            color: #ffd9ed;
+            margin: 0 0 12px;
+            font-weight: 700;
+            filter: drop-shadow(0 0 10px #ff91ca77);
+        }
+
+        p {
+            line-height: 1.7;
+            font-size: 18px;
+            max-width: 480px;
+            margin: 8px auto 14px;
+            color: #fff0f7;
+            font-weight: 500;
+        }
+
+        /* HIỆU ỨNG CON TRỎ NHẤP NHÁY KHI GÕ CHỮ */
+        .cursor-blink {
+            display: inline-block;
+            width: 2px;
+            height: 18px;
+            background-color: #ffd0e9;
+            margin-left: 3px;
+            vertical-align: middle;
+            animation: blink 0.8s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .name-input {
+            width: min(290px, 90%);
+            padding: 11px 16px;
+            border-radius: 30px;
+            border: 1px solid #ffe1f1aa;
+            outline: none;
+            text-align: center;
+            background: #fff4fb;
+            color: #653d69;
+            font-size: 14px;
+            margin: 4px auto 8px;
+        }
+
+            .name-input::placeholder {
+                color: #b08cae
+            }
+
+        .personal {
+            color: #ffd0e9;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .page {
+            color: #f6cde8;
+            font-size: 11px;
+            letter-spacing: 4px;
+            margin-top: 8px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .secondary {
+            background: #ffffff17;
+            border-color: #ffffff66;
+            box-shadow: none;
+        }
+
+        #garden .small-note {
+            font-size: 13px;
+            color: #f6d8ee;
+            margin-top: 7px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(-2deg)
+            }
+
+            50% {
+                transform: translateY(-9px) rotate(2deg)
+            }
+        }
+
+        @media(max-height:650px) {
+            #garden {
+                padding-bottom: 12px
+            }
+
+            p {
+                line-height: 1.5;
+                margin: 5px auto
+            }
+
+            .envelope-wrap {
+                height: 205px;
+                margin: 20px auto 12px
+            }
+
+            .letter {
+                height: 175px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- THẺ AUDIO PHÁT NHẠC NỀN -->
+    <audio id="bgMusic" src="leduong.mp3" loop preload="auto"></audio>
+
+    <!-- CÁC NÚT ĐIỀU KHIỂN GÓC TRÊN BÊN PHẢI -->
+    <div class="top-controls">
+        <button class="icon-btn" id="musicToggle" onclick="toggleMusic()" title="Bật/Tắt nhạc">🎵</button>
+        <button class="icon-btn" id="snapshotBtn" onclick="toggleSnapshotMode()" title="Chế độ chụp ảnh màn hình">📷</button>
+    </div>
+
+    <!-- HỘP QUÀ BÍ MẬT: ICON CHÚ MÈO GÓC DƯỚI BÊN TRÁI -->
+    <div id="secretCat" onclick="openSecretModal()" title="Điều bí mật nhỏ 🐾">🐱</div>
+
+    <!-- NÚT BỐC QUẺ MAY MẮN GÓC DƯỚI BÊN PHẢI -->
+    <button id="fortuneBtn" onclick="drawFortune()" title="Bốc quẻ may mắn 20/10">🥠 Bốc quẻ may mắn</button>
+
+    <!-- MODAL HIỂN THỊ NỘI DUNG BÍ MẬT -->
+    <div id="secretModal" class="custom-modal" onclick="closeModal(event, 'secretModal')">
+        <div class="modal-content">
+            <h3>Góc nhỏ bí mật 🌸</h3>
+            <p>Cảm ơn vì bạn đã khám phá ra góc này nhé! Chúc bạn luôn luôn rạng rỡ, đáng yêu và gặp thật nhiều điều ngọt ngào như những đóa anh đào trong khu vườn này ♡</p>
+            <button class="modal-close" onclick="closeModal(null, 'secretModal')">Đóng lại</button>
+        </div>
+    </div>
+
+    <!-- MODAL HIỂN THỊ QUẺ BỐC -->
+    <div id="fortuneModal" class="custom-modal" onclick="closeModal(event, 'fortuneModal')">
+        <div class="modal-content">
+            <h3>Quẻ May Mắn 20/10 ✨</h3>
+            <p id="fortuneText">Đang bốc quẻ...</p>
+            <button class="modal-close" onclick="closeModal(null, 'fortuneModal')">Tuyệt vời ♡</button>
+        </div>
+    </div>
+
+    <canvas id="sky"></canvas>
+    <canvas id="fireworks"></canvas>
+    <canvas id="treeCanvas"></canvas>
+    <canvas id="flowers"></canvas>
+    <canvas id="bubbles"></canvas>
+
+    <div id="hint">&#10022; A SECRET GARDEN &#10022;</div>
+
+    <!-- PHONG BÌ MỞ ĐẦU -->
+    <div id="intro">
+        <div class="intro-inner">
+            <div class="envelope-wrap" id="envelope">
+                <div class="envelope">
+                    <div class="letter">
+                        <div class="mini">&#127800; &#10022; &#127800;</div>
+                        <strong>Happy 20/10</strong>
+                        <small>Một món quà nhỏ dành tặng bạn</small>
+                        <div style="font-size:23px;margin-top:7px">&#9825;</div>
+                    </div>
+                    <div class="envelope-bottom"></div>
+                    <div class="envelope-flap"></div>
+                    <div class="seal">&#127800;</div>
+                </div>
+            </div>
+
+            <h2>Một khu vườn dành riêng cho bạn</h2>
+            <p>Hãy mở món quà nhỏ này nhé &#127800;</p>
+            <button class="action-btn" id="openBtn" onclick="openGarden()">
+                Mở cánh cửa khu vườn &#10024;
+            </button>
+            <p class="hint-small">&#10022; A LITTLE GIFT FOR YOU &#10022;</p>
+        </div>
+    </div>
+
+    <!-- CÁC SLIDE NỘI DUNG (6 SLIDE) -->
+    <main id="garden">
+        <div class="content">
+            <!-- SLIDE 1: Nhập tên -->
+            <section class="slide active" id="slide0">
+                <h1>Happy 20/10</h1>
+                <p>
+                    Một khu vườn nhỏ, một chút dịu dàng,<br>
+                    và những lời chúc dành riêng cho bạn.<br>
+                    Hãy nhập tên để bắt đầu khám phá nhé! 🌸
+                </p>
+                <input id="nickname"
+                       class="name-input"
+                       type="text"
+                       maxlength="35"
+                       placeholder="Nhập tên hoặc biệt danh..."
+                       autocomplete="off">
+                <br>
+                <button class="action-btn" onclick="goTo(1)">🌸 Mở lời chúc đầu tiên &rarr;</button>
+                <div class="page">01 / 06</div>
+            </section>
+
+            <!-- SLIDE 2 -->
+            <section class="slide" id="slide1">
+                <h2>1. Dịu dàng như hoa anh đào</h2>
+                <p class="typewriter" data-text="Gửi {name} 🌸<br>Chúc bạn ngày 20/10 thật nhiều niềm vui, luôn xinh tươi, rạng rỡ và gặp thật nhiều điều may mắn trong cuộc sống. Mong mỗi ngày đều có những điều nhỏ bé khiến bạn hạnh phúc."></p>
+                <button class="action-btn secondary" onclick="goTo(0)">&larr; Quay lại</button>
+                <button class="action-btn" onclick="goTo(2)">Tiếp theo &rarr;</button>
+                <div class="page">02 / 06</div>
+            </section>
+
+            <!-- SLIDE 3 -->
+            <section class="slide" id="slide2">
+                <h2>2. Rực rỡ theo cách riêng</h2>
+                <p class="typewriter" data-text="Gửi {name} 💕<br>Mong bạn luôn tự tin, yêu đời, làm điều mình thích và có đủ dũng khí để biến những ước mơ đẹp nhất thành hiện thực. Chúc bạn luôn được trân trọng và gặp nhiều người tử tế."></p>
+                <button class="action-btn secondary" onclick="goTo(1)">&larr; Quay lại</button>
+                <button class="action-btn" onclick="goTo(3)">Tiếp theo &rarr;</button>
+                <div class="page">03 / 06</div>
+            </section>
+
+            <!-- SLIDE 4 -->
+            <section class="slide" id="slide3">
+                <h2>3. Sức khỏe & Năng lượng</h2>
+                <p class="typewriter" data-text="Gửi {name} ✨<br>Chúc bạn luôn có một sức khỏe dồi dào, tinh thần luôn tươi trẻ và tràn đầy năng lượng tích cực để vượt qua mọi thử thách trong cuộc sống."></p>
+                <button class="action-btn secondary" onclick="goTo(2)">&larr; Quay lại</button>
+                <button class="action-btn" onclick="goTo(4)">Tiếp theo &rarr;</button>
+                <div class="page">04 / 06</div>
+            </section>
+
+            <!-- SLIDE 5 -->
+            <section class="slide" id="slide4">
+                <h2>4. Bình yên trong tâm hồn</h2>
+                <p class="typewriter" data-text="Gửi {name} 🍃<br>Mong rằng giữa những hối hả của cuộc sống, bạn sẽ luôn giữ được sự bình yên, nhẹ nhàng và hạnh phúc từ những điều giản dị nhất xung quanh mình."></p>
+                <button class="action-btn secondary" onclick="goTo(3)">&larr; Quay lại</button>
+                <button class="action-btn" onclick="goTo(5)">Lời chúc cuối &rarr;</button>
+                <div class="page">05 / 06</div>
+            </section>
+
+            <!-- SLIDE 6 -->
+            <section class="slide" id="slide5">
+                <h2>5. Trọn vẹn yêu thương</h2>
+                <p class="typewriter" data-text="Gửi {name} 💖<br>Cảm ơn bạn vì đã luôn là một mảnh ghép tuyệt vời. Chúc bạn một ngày 20/10 ngập tràn nụ cười, nhận được thật nhiều quà và tình yêu thương!"></p>
+                <button class="action-btn secondary" onclick="goTo(4)">&larr; Quay lại</button>
+                <button class="action-btn" onclick="goTo(0)">🔄 Đọc lại từ đầu</button>
+                <div class="page">06 / 06</div>
+                <div class="small-note">Chúc bạn một ngày 20/10 thật đáng nhớ ♡</div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        const sky = document.getElementById("sky");
+        const fwCanvas = document.getElementById("fireworks");
+        const treeCanvas = document.getElementById("treeCanvas");
+        const flowers = document.getElementById("flowers");
+        const bubblesCanvas = document.getElementById("bubbles");
+
+        const ctx = sky.getContext("2d");
+        const fwCtx = fwCanvas.getContext("2d");
+        const tc = treeCanvas.getContext("2d");
+        const fx = flowers.getContext("2d");
+        const bx = bubblesCanvas.getContext("2d");
+
+        let W, H, dpr, time = 0;
+        let wind = 1, bloom = 0, opened = false;
+        let petals = [], lights = [], branches = [], blossoms = [], bubbles = [];
+        let fireworks = [], particles = [];
+        let treeBaseX = 0, treeBaseY = 0;
+
+        let mouseX = 0, mouseY = 0, currentMouseX = 0, currentMouseY = 0;
+        window.addEventListener("mousemove", (e) => {
+            mouseX = (e.clientX - W / 2) / (W / 2);
+            mouseY = (e.clientY - H / 2) / (H / 2);
+        });
+
+        function resize() {
+            dpr = Math.min(window.devicePixelRatio || 1, 2);
+            W = innerWidth; H = innerHeight;
+
+            for (const c of [sky, fwCanvas, treeCanvas, flowers, bubblesCanvas]) {
+                c.width = W * dpr;
+                c.height = H * dpr;
+                c.style.width = W + "px";
+                c.style.height = H + "px";
+            }
+
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            fwCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            tc.setTransform(dpr, 0, 0, dpr, 0, 0);
+            fx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            bx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+            createTree();
+            createPetals();
+            createLights();
+            createBubbles();
+        }
+        window.addEventListener("resize", resize);
+
+        const bgMusic = document.getElementById("bgMusic");
+        const musicToggle = document.getElementById("musicToggle");
+        let isMusicPlaying = false;
+
+        function toggleMusic() {
+            if (isMusicPlaying) {
+                bgMusic.pause();
+                musicToggle.innerHTML = "🔇";
+                musicToggle.style.opacity = "0.6";
+                isMusicPlaying = false;
+            } else {
+                bgMusic.play().then(() => {
+                    musicToggle.innerHTML = "🎵";
+                    musicToggle.style.opacity = "1";
+                    isMusicPlaying = true;
+                }).catch(e => {
+                    console.log("Trình duyệt chặn tự động phát nhạc:", e);
+                });
+            }
+        }
+
+        let isCleanMode = false;
+        function toggleSnapshotMode() {
+            isCleanMode = !isCleanMode;
+            document.body.classList.toggle("clean-mode", isCleanMode);
+            document.getElementById("snapshotBtn").innerHTML = isCleanMode ? "👁️" : "📷";
+        }
+
+        /* ĐIỀU KHIỂN HỘP QUÀ BÍ MẬT & QUẺ MAY MẮN */
+        function openSecretModal() {
+            document.getElementById("secretModal").classList.add("show");
+        }
+
+        const fortunes = [
+            "Hôm nay tài lộc rủng rỉnh, đi đâu cũng được người ta tặng quà và yêu chiều hết nấc! 🌸",
+            "Chỉ số dễ thương hôm nay chạm mốc VÔ CỰC, ai nhìn thấy cũng muốn mỉm cười với bạn! ✨",
+            "Dự báo thời tiết hôm nay: Lòng bạn sẽ ngập tràn nắng ấm và những bất ngờ ngọt ngào ♡",
+            "Sắp có một món quà siêu to bự hoặc một lời tỏ tình cực kỳ đáng yêu đang chờ bạn đấy! 🎁",
+            "Thần may mắn đang mỉm cười với bạn, làm gì cũng suôn sẻ và gặp toàn người tử tế! 🌟",
+            "Hôm nay bạn chính là đóa hoa rực rỡ và tỏa sáng nhất trong khu vườn này! 💖"
+        ];
+
+        function drawFortune() {
+            const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+            document.getElementById("fortuneText").innerText = randomFortune;
+            document.getElementById("fortuneModal").classList.add("show");
+        }
+
+        function closeModal(e, modalId) {
+            if (!e || e.target.id === modalId || e.target.classList.contains("modal-close")) {
+                document.getElementById(modalId).classList.remove("show");
+            }
+        }
+
+        class Firework {
+            constructor(isBurst = false) {
+                this.x = Math.random() * W;
+                this.y = H;
+                this.targetY = isBurst ? Math.random() * (H * 0.6) : Math.random() * (H * 0.45);
+                this.speed = 7 + Math.random() * 4;
+                this.exploded = false;
+                this.isBurst = isBurst;
+            }
+            update() {
+                this.y -= this.speed;
+                if (this.y <= this.targetY) {
+                    this.exploded = true;
+                    createParticles(this.x, this.y, this.isBurst);
+                }
+            }
+            draw() {
+                fwCtx.save();
+                fwCtx.fillStyle = "#fff";
+                fwCtx.beginPath();
+                fwCtx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+                fwCtx.fill();
+                fwCtx.restore();
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color, isBurst = false) {
+                this.x = x; this.y = y; this.color = color;
+                const angle = Math.random() * Math.PI * 2;
+                const speed = isBurst ? (Math.random() * 7 + 2) : (Math.random() * 5 + 1);
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.012 + 0.008;
+            }
+            update() {
+                this.vx *= 0.95; this.vy *= 0.95;
+                this.vy += 0.06;
+                this.x += this.vx; this.y += this.vy;
+                this.alpha -= this.decay;
+            }
+            draw() {
+                fwCtx.save();
+                fwCtx.globalAlpha = Math.max(0, this.alpha);
+                fwCtx.fillStyle = this.color;
+                fwCtx.beginPath();
+                fwCtx.arc(this.x, this.y, 1.8, 0, Math.PI * 2);
+                fwCtx.fill();
+                fwCtx.restore();
+            }
+        }
+
+        function createParticles(x, y, isBurst = false) {
+            const colors = ["#ff9fce", "#ffd8eb", "#ffc0df", "#ffe9b8", "#fff0d7", "#ff7bbd", "#fff"];
+            const count = isBurst ? (45 + Math.floor(Math.random() * 20)) : (20 + Math.floor(Math.random() * 10));
+            for (let i = 0; i < count; i++) {
+                particles.push(new Particle(x, y, colors[Math.floor(Math.random() * colors.length)], isBurst));
+            }
+        }
+
+        function createTree() {
+            branches = [];
+            blossoms = [];
+
+            const scale = Math.min(W / 390, H / 650, 1.18);
+            treeBaseX = W * 0.5;
+            treeBaseY = H * 1.035;
+
+            function branch(x, y, angle, len, width, depth) {
+                if (depth <= 0 || len < 4) return;
+
+                const curve = (Math.random() - .5) * len * .13;
+                const x2 = x + Math.sin(angle) * len + curve;
+                const y2 = y - Math.cos(angle) * len;
+
+                branches.push({ x, y, x2, y2, width, depth, curve });
+
+                if (depth <= 5) {
+                    const count = depth <= 3 ? 1 : (Math.random() > 0.4 ? 1 : 0);
+                    for (let j = 0; j < count; j++) {
+                        const t = .25 + Math.random() * .7;
+                        blossoms.push({
+                            x: x + (x2 - x) * t + (Math.random() - .5) * 8,
+                            y: y + (y2 - y) * t + (Math.random() - .5) * 8,
+                            size: 2.3 + Math.random() * 3.0,
+                            delay: Math.random() * 2.5,
+                            hue: Math.random(),
+                            phase: Math.random() * 6.28
+                        });
+                    }
+                }
+
+                const next = len * (.70 + Math.random() * .09);
+                const spread = .28 + Math.random() * .20;
+
+                branch(x2, y2, angle - spread, next, width * .70, depth - 1);
+                branch(x2, y2, angle + spread, next, width * .70, depth - 1);
+
+                if (depth > 4 && Math.random() > .4) {
+                    branch(x2, y2, angle + (Math.random() - .5) * .8, next * .75, width * .65, depth - 2);
+                }
+            }
+
+            branch(treeBaseX, treeBaseY, 0, H * .24 * scale, 15 * scale, 9);
+            branch(treeBaseX, treeBaseY, -.55, H * .27 * scale, 10 * scale, 8);
+            branch(treeBaseX, treeBaseY, .58, H * .25 * scale, 10 * scale, 8);
+        }
+
+        function createPetals() {
+            petals = [];
+            for (let i = 0; i < 22; i++) {
+                petals.push({
+                    x: Math.random() * W, y: Math.random() * H,
+                    size: 2 + Math.random() * 3.5,
+                    speed: .4 + Math.random() * 1.1,
+                    sway: Math.random() * Math.PI * 2,
+                    rot: Math.random() * 6,
+                    spin: (Math.random() - .5) * .05
+                });
+            }
+        }
+
+        function createLights() {
+            lights = [];
+            for (let i = 0; i < 12; i++) {
+                lights.push({
+                    x: Math.random() * W, y: Math.random() * H,
+                    phase: Math.random() * 7,
+                    size: 1 + Math.random() * 2
+                });
+            }
+        }
+
+        function createBubbles() {
+            bubbles = [];
+            for (let i = 0; i < 10; i++) {
+                bubbles.push({
+                    x: Math.random() * W, y: Math.random() * H,
+                    size: 8 + Math.random() * 14,
+                    speed: 0.4 + Math.random() * 0.7,
+                    sway: Math.random() * Math.PI * 2,
+                    swaySpeed: 0.01 + Math.random() * 0.02,
+                    opacity: 0.3 + Math.random() * 0.4,
+                    pulse: Math.random() * Math.PI
+                });
+            }
+        }
+
+        function drawBubbles() {
+            bx.clearRect(0, 0, W, H);
+            if (!opened) return;
+
+            for (const b of bubbles) {
+                b.y -= b.speed;
+                b.sway += b.swaySpeed;
+                b.pulse += 0.03;
+                let currentX = b.x + Math.sin(b.sway) * 20;
+
+                if (b.y < -30) { b.y = H + 30; b.x = Math.random() * W; }
+
+                bx.save();
+                bx.translate(currentX, b.y);
+                let currentAlpha = b.opacity + Math.sin(b.pulse) * 0.15;
+                bx.globalAlpha = Math.max(0.1, Math.min(0.85, currentAlpha));
+
+                bx.beginPath();
+                bx.arc(0, 0, b.size, 0, Math.PI * 2);
+                bx.fillStyle = "rgba(255, 190, 230, 0.18)";
+                bx.fill();
+                bx.strokeStyle = "rgba(255, 255, 255, 0.65)";
+                bx.lineWidth = 1.5;
+                bx.stroke();
+
+                bx.beginPath();
+                bx.arc(-b.size * 0.35, -b.size * 0.35, b.size * 0.22, 0, Math.PI * 2);
+                bx.fillStyle = "rgba(255, 255, 255, 0.9)";
+                bx.fill();
+                bx.restore();
+            }
+        }
+
+        function drawSky() {
+            let colorProgress = Math.min(1, time / 3600);
+
+            const grad = ctx.createLinearGradient(0, 0, 0, H);
+
+            grad.addColorStop(0, colorProgress > 0.5 ? "#100c24" : "#211d43");
+            grad.addColorStop(.40, colorProgress > 0.5 ? "#3c254c" : "#69456f");
+            grad.addColorStop(.72, colorProgress > 0.5 ? "#824b75" : "#c778a0");
+            grad.addColorStop(1, colorProgress > 0.5 ? "#181024" : "#30213f");
+
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, W, H);
+
+            if (time > 300) {
+                ctx.save();
+                let starAlpha = Math.min(0.8, (time - 300) / 1000);
+                ctx.fillStyle = `rgba(255, 255, 255, ${starAlpha})`;
+                for (let s = 0; s < 25; s++) {
+                    let sx = (s * 137.5) % W;
+                    let sy = (s * 89.3) % (H * 0.5);
+                    let twinkle = 0.5 + 0.5 * Math.sin(time * 0.05 + s);
+                    ctx.globalAlpha = starAlpha * twinkle;
+                    ctx.beginPath();
+                    ctx.arc(sx, sy, 1 + (s % 2), 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+
+            const mx = W * .78 + currentMouseX * 15, my = H * .17 + currentMouseY * 10;
+            const glow = ctx.createRadialGradient(mx, my, 3, mx, my, 85);
+            glow.addColorStop(0, "#fff3dcbb");
+            glow.addColorStop(1, "#fff3dc00");
+            ctx.fillStyle = glow;
+            ctx.fillRect(mx - 85, my - 85, 170, 170);
+
+            ctx.beginPath();
+            ctx.arc(mx, my, 22, 0, Math.PI * 2);
+            ctx.fillStyle = "#fff0d7";
+            ctx.fill();
+
+            // Đồi xa
+            ctx.fillStyle = "#3a294c";
+            ctx.beginPath();
+            ctx.moveTo(0, H * .70);
+            for (let x = 0; x <= W; x += 8) {
+                ctx.lineTo(x, H * .67 + Math.sin(x * .012) * 22 + Math.sin(x * .027) * 12);
+            }
+            ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.fill();
+
+            ctx.fillStyle = "#251b36";
+            ctx.beginPath();
+            ctx.moveTo(0, H * .84);
+            for (let x = 0; x <= W; x += 8) {
+                ctx.lineTo(x, H * .79 + Math.sin(x * .018 + 2) * 18);
+            }
+            ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.fill();
+        }
+
+        function drawBranches() {
+            const visible = Math.floor(branches.length * bloom);
+
+            for (let i = 0; i < visible; i++) {
+                const b = branches[i];
+                const local = Math.min(1, (bloom * 1.6) + (.12 * (9 - b.depth)));
+
+                tc.beginPath();
+                tc.moveTo(b.x, b.y);
+                tc.quadraticCurveTo(
+                    (b.x + b.x2) / 2 + b.curve,
+                    (b.y + b.y2) / 2,
+                    b.x + (b.x2 - b.x) * local,
+                    b.y + (b.y2 - b.y) * local
+                );
+                tc.strokeStyle = b.depth > 5 ? "#4c2c40" : "#664051";
+                tc.lineWidth = Math.max(.6, b.width);
+                tc.lineCap = "round";
+                tc.stroke();
+            }
+
+            for (const f of blossoms) {
+                const open = Math.max(0, Math.min(1, (time * .004 - f.delay) * 1.5));
+                if (open <= 0) continue;
+
+                const r = f.size * open;
+                const colors = ["#ffc0df", "#ff9fce", "#ffe0ed", "#f58dbc"];
+                const color = colors[Math.floor(f.hue * colors.length)];
+
+                tc.save();
+                tc.globalAlpha = .92 * open;
+                tc.translate(f.x, f.y);
+                tc.rotate(Math.sin(time * .01 + f.phase) * .08);
+
+                tc.globalAlpha = .15 * open;
+                tc.fillStyle = "#ffb8e5";
+                tc.beginPath();
+                tc.arc(0, 0, r * 2.7, 0, Math.PI * 2);
+                tc.fill();
+
+                tc.globalAlpha = .92 * open;
+                tc.fillStyle = color;
+
+                for (let k = 0; k < 5; k++) {
+                    const a = k * Math.PI * 2 / 5;
+                    tc.beginPath();
+                    tc.ellipse(
+                        Math.cos(a) * r * .62,
+                        Math.sin(a) * r * .62,
+                        r * .68, r * .46, a, 0, Math.PI * 2
+                    );
+                    tc.fill();
+                }
+
+                tc.fillStyle = "#ffe9b8";
+                tc.beginPath();
+                tc.arc(0, 0, r * .22, 0, Math.PI * 2);
+                tc.fill();
+                tc.restore();
+            }
+        }
+
+        function drawPetals() {
+            fx.clearRect(0, 0, W, H);
+
+            for (const p of petals) {
+                p.y += p.speed;
+                p.x += Math.sin(time * .015 + p.sway) * .65 * wind;
+                p.rot += p.spin;
+
+                if (p.y > H + 15) { p.y = -15; p.x = Math.random() * W }
+                if (p.x > W + 10) p.x = -10;
+                if (p.x < -10) p.x = W + 10;
+
+                fx.save();
+                fx.translate(p.x, p.y);
+                fx.rotate(p.rot);
+                fx.fillStyle = "rgba(255,190,222,.88)";
+                fx.beginPath();
+                fx.ellipse(0, 0, p.size, p.size * .55, 0, 0, Math.PI * 2);
+                fx.fill();
+                fx.restore();
+            }
+
+            for (const l of lights) {
+                const alpha = .25 + .65 * (.5 + .5 * Math.sin(time * .045 + l.phase));
+                fx.globalAlpha = alpha;
+                fx.fillStyle = "#fff0b5";
+                fx.shadowBlur = 12;
+                fx.shadowColor = "#ffe8a0";
+                fx.beginPath();
+                fx.arc(l.x, l.y, l.size, 0, Math.PI * 2);
+                fx.fill();
+            }
+
+            fx.globalAlpha = 1;
+            fx.shadowBlur = 0;
+        }
+
+        function frame() {
+            time++;
+
+            currentMouseX += (mouseX - currentMouseX) * 0.05;
+            currentMouseY += (mouseY - currentMouseY) * 0.05;
+
+            sky.style.transform = `translate(${currentMouseX * 8}px, ${currentMouseY * 5}px)`;
+            treeCanvas.style.transform = `translate(${currentMouseX * 3}px, ${currentMouseY * 2}px)`;
+
+            drawSky();
+
+            if (opened) {
+                bloom = Math.min(1, bloom + .0045);
+                if (time % 70 === 0) fireworks.push(new Firework(false));
+            } else {
+                bloom = Math.min(.08, bloom + .002);
+            }
+
+            fwCtx.clearRect(0, 0, W, H);
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                fireworks[i].update();
+                fireworks[i].draw();
+                if (fireworks[i].exploded) fireworks.splice(i, 1);
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].draw();
+                if (particles[i].alpha <= 0) particles.splice(i, 1);
+            }
+
+            tc.clearRect(0, 0, W, H);
+            drawBranches();
+            drawPetals();
+            drawBubbles();
+
+            requestAnimationFrame(frame);
+        }
+
+        function openGarden() {
+            if (opened) return;
+            opened = true;
+
+            bgMusic.play().then(() => {
+                isMusicPlaying = true;
+                musicToggle.innerHTML = "🎵";
+                musicToggle.style.opacity = "1";
+            }).catch(e => {
+                console.log("Trình duyệt chặn tự động phát nhạc:", e);
+            });
+
+            document.getElementById("envelope").classList.add("open");
+            document.getElementById("openBtn").style.opacity = "0";
+
+            setTimeout(() => {
+                document.getElementById("intro").classList.add("hide");
+                document.getElementById("garden").classList.add("show");
+                document.getElementById("hint").style.opacity = "1";
+                runTypewriter(1);
+            }, 1200);
+        }
+
+        let typewriterTimeout = null;
+
+        function goTo(index) {
+            document.querySelectorAll(".slide").forEach((s, i) => {
+                s.classList.toggle("active", i === index);
+            });
+            updateNames();
+            if (index > 0) runTypewriter(index);
+
+            if (index === 5) {
+                for (let k = 0; k < 4; k++) {
+                    setTimeout(() => {
+                        fireworks.push(new Firework(true));
+                    }, k * 400);
+                }
+            }
+        }
+
+        function updateNames() {
+            const name = document.getElementById("nickname").value.trim() || "bạn thân mến";
+            document.querySelectorAll(".typewriter").forEach(el => {
+                let rawText = el.getAttribute("data-text");
+                let formattedText = rawText.replace("{name}", `<span class="personal">${name}</span>`);
+                el.dataset.htmlContent = formattedText;
+            });
+        }
+
+        function runTypewriter(slideIndex) {
+            if (typewriterTimeout) clearTimeout(typewriterTimeout);
+
+            const activeSlide = document.getElementById("slide" + slideIndex);
+            if (!activeSlide) return;
+
+            const target = activeSlide.querySelector(".typewriter");
+            if (!target) return;
+
+            updateNames();
+            let htmlContent = target.dataset.htmlContent || target.getAttribute("data-text").replace("{name}", `<span class="personal">${document.getElementById("nickname").value.trim() || "bạn thân mến"}</span>`);
+
+            target.innerHTML = "";
+
+            let i = 0;
+            function typing() {
+                if (i <= htmlContent.length) {
+                    if (htmlContent.charAt(i) === '<') {
+                        let closeIdx = htmlContent.indexOf('>', i);
+                        if (closeIdx !== -1) {
+                            i = closeIdx + 1;
+                        }
+                    } else {
+                        i++;
+                    }
+                    target.innerHTML = htmlContent.substring(0, i) + '<span class="cursor-blink"></span>';
+                    typewriterTimeout = setTimeout(typing, 35);
+                } else {
+                    target.innerHTML = htmlContent;
+                }
+            }
+            typing();
+        }
+
+        resize();
+        requestAnimationFrame(frame);
+    </script>
+</body>
+</html>
